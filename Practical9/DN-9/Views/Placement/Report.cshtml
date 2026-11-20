@@ -1,0 +1,6 @@
+@model List<Placement>
+@{ViewData["Title"]="Placement Report";var s=ViewBag.Stats;}
+<div class="report-head"><h2>Placement Summary Report</h2><p>Marwadi University | Report generated @DateTime.Now.ToString("dd-MM-yyyy HH:mm")</p><p>Status filter: @ViewBag.Status</p></div>
+<div class="cards"><div class="card">Records<strong>@Model.Count</strong></div><div class="card">Placed<strong>@Model.Count(x=>x.Status=="Placed")</strong></div><div class="card">Average Package<strong>@s.Item5.ToString("0.00") LPA</strong></div></div>
+<table><thead><tr><th>ID</th><th>Student</th><th>Enrollment</th><th>Department</th><th>Company</th><th>Status</th><th>Package LPA</th></tr></thead><tbody>@foreach(var p in Model){<tr><td>@p.Id</td><td>@p.StudentName</td><td>@p.EnrollmentNo</td><td>@p.Department</td><td>@p.CompanyName</td><td>@p.Status</td><td>@p.PackageLpa.ToString("0.00")</td></tr>}</tbody></table>
+<p class="no-print"><button class="btn" onclick="window.print()">Print / Save as PDF</button> <a class="btn gray" href="/Placement/Index">Back</a></p>

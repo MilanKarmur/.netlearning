@@ -1,0 +1,15 @@
+using DN_9.Models;using Microsoft.Data.Sqlite;
+namespace DN_9.Data;
+public class PlacementRepository{
+public List<Placement> All(string? q=null,string? status=null){var a=new List<Placement>();using var c=new SqliteConnection(PlacementDb.Cs);c.Open();using var cmd=c.CreateCommand();
+cmd.CommandText="SELECT Id,StudentName,EnrollmentNo,Department,CompanyName,Status,PackageLpa,Email FROM Placements WHERE ($q IS NULL OR StudentName LIKE $q OR EnrollmentNo LIKE $q OR CompanyName LIKE $q) AND ($s IS NULL OR Status=$s) ORDER BY Id";
+cmd.Parameters.AddWithValue("$q",string.IsNullOrWhiteSpace(q)?DBNull.Value:$"%{q}%");cmd.Parameters.AddWithValue("$s",string.IsNullOrWhiteSpace(status)||status=="All"?DBNull.Value:status);
+using var r=cmd.ExecuteReader();while(r.Read())a.Add(Map(r));return a;}
+public Placement? Get(int id){using var c=new SqliteConnection(PlacementDb.Cs);c.Open();using var cmd=c.CreateCommand();cmd.CommandText="SELECT Id,StudentName,EnrollmentNo,Department,CompanyName,Status,PackageLpa,Email FROM Placements WHERE Id=$id";cmd.Parameters.AddWithValue("$id",id);using var r=cmd.ExecuteReader();return r.Read()?Map(r):null;}
+public void Add(Placement p){using var c=new SqliteConnection(PlacementDb.Cs);c.Open();using var cmd=c.CreateCommand();cmd.CommandText="INSERT INTO Placements(StudentName,EnrollmentNo,Department,CompanyName,Status,PackageLpa,Email) VALUES($n,$e,$d,$c,$s,$p,$m)";Params(cmd,p);cmd.ExecuteNonQuery();}
+public bool Update(Placement p){using var c=new SqliteConnection(PlacementDb.Cs);c.Open();using var cmd=c.CreateCommand();cmd.CommandText="UPDATE Placements SET StudentName=$n,EnrollmentNo=$e,Department=$d,CompanyName=$c,Status=$s,PackageLpa=$p,Email=$m WHERE Id=$id";Params(cmd,p);cmd.Parameters.AddWithValue("$id",p.Id);return cmd.ExecuteNonQuery()==1;}
+public bool Delete(int id){using var c=new SqliteConnection(PlacementDb.Cs);c.Open();using var cmd=c.CreateCommand();cmd.CommandText="DELETE FROM Placements WHERE Id=$id";cmd.Parameters.AddWithValue("$id",id);return cmd.ExecuteNonQuery()==1;}
+public (int total,int placed,int applied,int interview,decimal avg) Stats(){var a=All();var packages=a.Where(x=>x.Status=="Placed"&&x.PackageLpa>0).Select(x=>x.PackageLpa).ToList();return(a.Count,a.Count(x=>x.Status=="Placed"),a.Count(x=>x.Status=="Applied"),a.Count(x=>x.Status=="Interview"),packages.Count==0?0:packages.Average());}
+static void Params(SqliteCommand c,Placement p){c.Parameters.AddWithValue("$n",p.StudentName);c.Parameters.AddWithValue("$e",p.EnrollmentNo);c.Parameters.AddWithValue("$d",p.Department);c.Parameters.AddWithValue("$c",p.CompanyName);c.Parameters.AddWithValue("$s",p.Status);c.Parameters.AddWithValue("$p",p.PackageLpa);c.Parameters.AddWithValue("$m",(object?)p.Email??DBNull.Value);}
+static Placement Map(SqliteDataReader r)=>new(){Id=r.GetInt32(0),StudentName=r.GetString(1),EnrollmentNo=r.GetString(2),Department=r.GetString(3),CompanyName=r.GetString(4),Status=r.GetString(5),PackageLpa=Convert.ToDecimal(r.GetValue(6)),Email=r.IsDBNull(7)?null:r.GetString(7)};
+}

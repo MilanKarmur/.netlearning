@@ -1,0 +1,12 @@
+@model Placement
+@{ViewData["Title"]="Edit Placement Record";}
+<h2>Edit Placement Record</h2><form method="post" action="/Placement/Edit">@Html.AntiForgeryToken()
+<input asp-for="Id" type="hidden"/><div asp-validation-summary="ModelOnly" class="error"></div>
+<div class="form-group"><label asp-for="StudentName"></label><input asp-for="StudentName" class="input"/><span asp-validation-for="StudentName" class="error"></span></div>
+<div class="form-group"><label asp-for="EnrollmentNo"></label><input asp-for="EnrollmentNo" class="input"/><span asp-validation-for="EnrollmentNo" class="error"></span></div>
+<div class="form-group"><label asp-for="Department"></label><input asp-for="Department" class="input"/><span asp-validation-for="Department" class="error"></span></div>
+<div class="form-group"><label asp-for="CompanyName"></label><input asp-for="CompanyName" class="input"/><span asp-validation-for="CompanyName" class="error"></span></div>
+<div class="form-group"><label asp-for="Status"></label><select asp-for="Status" class="input"><option>Applied</option><option>Interview</option><option>Placed</option><option>Rejected</option></select></div>
+<div class="form-group"><label asp-for="PackageLpa"></label><input asp-for="PackageLpa" type="number" step="0.01" class="input"/></div>
+<div class="form-group"><label asp-for="Email"></label><input asp-for="Email" class="input"/></div>
+<button class="btn" type="submit">Update Record</button> <a class="btn gray" href="/Placement/Index">Cancel</a></form>

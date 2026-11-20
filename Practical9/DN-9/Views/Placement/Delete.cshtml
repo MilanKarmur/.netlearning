@@ -1,0 +1,3 @@
+@model Placement
+@{ViewData["Title"]="Delete Placement";}
+<h2>Delete Placement Record</h2><p>Confirm deleting <b>@Model.StudentName</b> (@Model.EnrollmentNo)?</p><form method="post" action="/Placement/Delete">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><button class="btn red" type="submit">Confirm Delete</button> <a class="btn gray" href="/Placement/Index">Cancel</a></form>
