@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practical 10 | Student Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">S</div><div><b>StudentHub</b><small>MANAGEMENT SYSTEM</small></div></div>
+    <div class="side-label">WORKSPACE</div>
+    <a class="nav active" href="#"><span>▦</span> Overview</a>
+    <a class="nav" href="#students"><span>♙</span> Students</a>
+    <div class="sidebar-bottom"><div class="api-status"><span class="pulse"></span><div><b>API Connected</b><small>Local server running</small></div></div><div class="version">PRACTICAL 10 · ASP.NET CORE</div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><div class="eyebrow">ACADEMIC MANAGEMENT</div><h1>Student overview</h1></div><div class="top-actions"><span class="date-chip" id="today"></span><div class="avatar">SM</div></div></header>
+    <section class="welcome"><div><span class="welcome-tag">STUDENT DIRECTORY</span><h2>Manage your students<br><em>with confidence.</em></h2><p>A simple REST API with a clean dashboard to create, view, update and delete student records. No database setup required.</p><button class="primary-btn" onclick="openModal()">＋ Add new student</button></div><div class="welcome-art"><div class="art-circle"></div><div class="art-card card-one"><span>✦</span><b>Student records</b><small>One place. Full control.</small></div><div class="art-card card-two"><div class="mini-avatars"><i>A</i><i>D</i><i>R</i></div><b>Organised</b><small>Academic profiles</small></div><div class="art-orbit">✳</div></div></section>
+    <section class="stats">
+      <article class="stat-card"><div class="stat-top"><span>Total students</span><span class="stat-icon purple">♙</span></div><strong id="totalCount">—</strong><small>All registered students</small></article>
+      <article class="stat-card"><div class="stat-top"><span>Courses</span><span class="stat-icon blue">▤</span></div><strong id="courseCount">—</strong><small>Unique study programmes</small></article>
+      <article class="stat-card"><div class="stat-top"><span>Active semesters</span><span class="stat-icon orange">◷</span></div><strong id="semesterCount">—</strong><small>Across all student records</small></article>
+    </section>
+    <section class="directory" id="students">
+      <div class="section-heading"><div><div class="eyebrow">RECORD MANAGEMENT</div><h2>All students <span class="count-pill" id="recordCount">0</span></h2></div><button class="outline-btn" onclick="loadStudents()">↻ Refresh</button></div>
+      <div class="toolbar"><div class="searchbox"><span>⌕</span><input id="search" placeholder="Search by name, email, course or enrollment…" oninput="filterStudents()"></div><div class="toolbar-right"><span id="resultLabel">Showing all records</span><button class="primary-btn small" onclick="openModal()">＋ Add student</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>ENROLLMENT NO.</th><th>COURSE</th><th>SEMESTER</th><th>PHONE</th><th>ACTIONS</th></tr></thead><tbody id="studentRows"><tr><td colspan="6" class="empty">Loading student records…</td></tr></tbody></table></div>
+      <div class="table-footer"><span id="footerCount">0 students</span><span>Powered by ASP.NET Core REST API · In-memory storage</span></div>
+    </section>
+    <footer>Practical 10 · Student Management REST API <span>Built with ASP.NET Core</span></footer>
+  </main>
+</div>
+<div class="modal-backdrop" id="modal">
+ <div class="modal"><div class="modal-head"><div><div class="eyebrow">STUDENT DETAILS</div><h2 id="modalTitle">Add student</h2></div><button class="close-btn" onclick="closeModal()">×</button></div>
+ <form id="studentForm"><input type="hidden" id="studentId"><div class="form-grid">
+  <label class="wide">Full name<input id="fullName" required maxlength="100" placeholder="e.g. Aarav Shah"></label>
+  <label>Email address<input id="email" type="email" required placeholder="student@example.com"></label>
+  <label>Phone number<input id="phone" maxlength="15" placeholder="9876543210"></label>
+  <label>Enrollment number<input id="enrollmentNo" required placeholder="MU2024001"></label>
+  <label>Course<input id="course" required placeholder="Computer Science"></label>
+  <label>Semester<select id="semester"><option value="1">Semester 1</option><option value="2">Semester 2</option><option value="3">Semester 3</option><option value="4">Semester 4</option><option value="5" selected>Semester 5</option><option value="6">Semester 6</option><option value="7">Semester 7</option><option value="8">Semester 8</option><option value="9">Semester 9</option><option value="10">Semester 10</option><option value="11">Semester 11</option><option value="12">Semester 12</option></select></label>
+ </div><div class="form-actions"><button type="button" class="outline-btn" onclick="closeModal()">Cancel</button><button class="primary-btn" type="submit" id="saveBtn">Save student</button></div></form></div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body></html>

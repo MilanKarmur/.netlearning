@@ -1,0 +1,20 @@
+let students = [];
+const $ = id => document.getElementById(id);
+const API = '/api/students';
+$('today').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+async function loadStudents(){
+  try{const res=await fetch(API);if(!res.ok)throw new Error('Unable to load students');students=await res.json();renderStudents(students);updateStats();}
+  catch(e){$('studentRows').innerHTML='<tr><td colspan="6" class="empty">Could not connect to the API. Make sure the ASP.NET Core server is running.</td></tr>';toast(e.message);}
+}
+function updateStats(){$('totalCount').textContent=students.length;$('courseCount').textContent=new Set(students.map(s=>s.course)).size;$('semesterCount').textContent=new Set(students.map(s=>s.semester)).size;$('recordCount').textContent=students.length;$('footerCount').textContent=`${students.length} student${students.length===1?'':'s'}`;}
+function renderStudents(list){$('studentRows').innerHTML=list.length?list.map(s=>`<tr><td><div class="student-cell"><div class="student-avatar">${escapeHtml(s.fullName.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase())}</div><div><b>${escapeHtml(s.fullName)}</b><small>${escapeHtml(s.email)}</small></div></div></td><td>${escapeHtml(s.enrollmentNo)}</td><td><span class="course-tag">${escapeHtml(s.course)}</span></td><td>Semester ${s.semester}</td><td>${escapeHtml(s.phone||'—')}</td><td><button class="action-btn" title="Edit" onclick="editStudent(${s.id})">✎</button><button class="action-btn" title="Delete" onclick="deleteStudent(${s.id})">⌫</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No student records found. Add your first student to get started.</td></tr>';$('resultLabel').textContent=`Showing ${list.length} of ${students.length} records`;}
+function filterStudents(){const q=$('search').value.toLowerCase();renderStudents(students.filter(s=>[s.fullName,s.email,s.course,s.enrollmentNo].some(v=>(v||'').toLowerCase().includes(q))));}
+function openModal(student=null){$('studentForm').reset();$('studentId').value=student?.id||'';$('modalTitle').textContent=student?'Edit student':'Add student';$('saveBtn').textContent=student?'Update student':'Save student';if(student){$('fullName').value=student.fullName;$('email').value=student.email;$('phone').value=student.phone;$('enrollmentNo').value=student.enrollmentNo;$('course').value=student.course;$('semester').value=student.semester;}$('modal').classList.add('show');}
+function closeModal(){$('modal').classList.remove('show');}
+function editStudent(id){const s=students.find(x=>x.id===id);if(s)openModal(s);}
+$('studentForm').addEventListener('submit',async e=>{e.preventDefault();const id=$('studentId').value;const payload={fullName:$('fullName').value.trim(),email:$('email').value.trim(),phone:$('phone').value.trim(),enrollmentNo:$('enrollmentNo').value.trim(),course:$('course').value.trim(),semester:Number($('semester').value)};try{const res=await fetch(id?`${API}/${id}`:API,{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(!res.ok)throw new Error(data.message||'Request failed');closeModal();toast(id?'Student updated successfully':'Student added successfully');await loadStudents();}catch(err){toast(err.message);}});
+async function deleteStudent(id){const s=students.find(x=>x.id===id);if(!s||!confirm(`Delete ${s.fullName} from the student records?`))return;try{const res=await fetch(`${API}/${id}`,{method:'DELETE'});const data=await res.json();if(!res.ok)throw new Error(data.message||'Delete failed');toast('Student deleted successfully');await loadStudents();}catch(e){toast(e.message);}}
+function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal();});
+loadStudents();
